@@ -60,6 +60,7 @@ export const AuthProvider = ({ children }) => {
 
       const { data: user } = await axios.get('/users/current-logged-user');
       dispatch({ type: 'LOGIN', payload: { user } });
+			return { status: 200  }
     } catch (error) {
       dispatch({
         type: 'UPDATE',
