@@ -1,40 +1,70 @@
-import { SimpleCard } from "app/components";
+import { SimpleCard } from 'app/components';
 import {
   Box,
   styled,
   Grid,
-} from "@mui/material";
-import { React, useEffect, useState, useRef } from "react";
-import { LoadingButton } from "@mui/lab";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
-import moment from "moment";
-import axios from "app/config/axios-interceptor";
+  Autocomplete,
+  Icon,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  IconButton
+} from '@mui/material';
+import { React, useEffect, useState, useRef } from 'react';
+import { ROWS_PER_PAGE } from 'app/utils/constant';
+import CurrencyFormatter from 'app/utils/CurrencyFormatter';
+import { LoadingButton } from '@mui/lab';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
+import moment from 'moment';
+import { Button } from 'primereact/button';
+import { APP_DATETIME_FORMAT } from 'app/utils/constant';
+import axios from 'app/config/axios-interceptor';
+import { fakeTableData } from './fakeTableDate';
 
-const Container = styled("div")(({ theme }) => ({
-  margin: "30px",
-  [theme.breakpoints.down("sm")]: { margin: "16px" },
-  "& .breadcrumb": {
-    marginBottom: "30px",
-    [theme.breakpoints.down("sm")]: { marginBottom: "16px" },
+const StyledTable = styled(Table)(({ theme }) => ({
+  whiteSpace: 'pre',
+  '& thead': {
+    '& tr': { '& th': { paddingLeft: 0, paddingRight: 0 } }
   },
+  '& tbody': {
+    '& tr': { '& td': { paddingLeft: 0, textTransform: 'capitalize' } }
+  }
+}));
+
+const Container = styled('div')(({ theme }) => ({
+  margin: '30px',
+  [theme.breakpoints.down('sm')]: { margin: '16px' },
+  '& .breadcrumb': {
+    marginBottom: '30px',
+    [theme.breakpoints.down('sm')]: { marginBottom: '16px' }
+  }
 }));
 
 const TextField = styled(TextValidator)(() => ({
-  width: "100%",
-  marginBottom: "16px",
+  width: '100%',
+  marginBottom: '16px'
 }));
 
 const OverallReport = () => {
   const [subscribarList, setsubscribarList] = useState([]);
   const [state, setState] = useState({
-    startDate: moment(new Date()).format("YYYY-MM-DD"),
-    endDate: moment(new Date()).format("YYYY-MM-DD"),
+    startDate: moment(new Date()).format('YYYY-MM-DD'),
+    endDate: moment(new Date()).format('YYYY-MM-DD')
   });
+  const [rowsPerPage, setRowsPerPage] = useState(ROWS_PER_PAGE);
+  const [pageCount, setPageCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [activePage, setActivePage] = useState(0);
   const today = new Date();
-  const todayDate = useState(moment(today).format("YYYY-MM-DD"));
+  const [employee, setEmployee] = useState(null);
+  const todayDate = useState(moment(today).format('YYYY-MM-DD'));
+  const datatable = useRef(null);
   const tableRef = useRef(null);
 
   useEffect(() => {}, []);
@@ -46,43 +76,43 @@ const OverallReport = () => {
 
   const handleSubmit = async (event) => {
     setLoading(true);
-    const res = await axios.post("/roles/find-by-criteria", {
+    const res = await axios.post('/roles/find-by-criteria', {
       name: event.target.name.value ? event.target.name.value : null,
-      description: event.target.description.value
-        ? event.target.description.value
-        : null,
+      description: event.target.description.value ? event.target.description.value : null
     });
+
     setsubscribarList(res.data);
     setLoading(false);
+  };
+
+  const exportCSV = () => {
+    datatable.current.exportCSV();
   };
 
   const searchrole = () => {};
 
   const exportExcel = (filename) => {
-    import("xlsx").then((xlsx) => {
-      const worksheet = xlsx.utils.json_to_sheet(subscribarList);
-      const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
+    import('xlsx').then((xlsx) => {
+      const worksheet = xlsx.utils.json_to_sheet(fakeTableData);
+      const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
       const excelBuffer = xlsx.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
+        bookType: 'xlsx',
+        type: 'array'
       });
       saveAsExcelFile(excelBuffer, filename);
     });
   };
   const saveAsExcelFile = (buffer, fileName) => {
-    import("file-saver").then((module) => {
+    import('file-saver').then((module) => {
       if (module && module.default) {
         let EXCEL_TYPE =
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-        let EXCEL_EXTENSION = ".xlsx";
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+        let EXCEL_EXTENSION = '.xlsx';
         const data = new Blob([buffer], {
-          type: EXCEL_TYPE,
+          type: EXCEL_TYPE
         });
 
-        module.default.saveAs(
-          data,
-          fileName + "_export_" + new Date().getTime() + EXCEL_EXTENSION,
-        );
+        module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
       }
     });
   };
@@ -104,7 +134,7 @@ const OverallReport = () => {
                 value={startDate || todayDate}
                 defaultValue={todayDate}
                 InputLabelProps={{
-                  shrink: true,
+                  shrink: true
                 }}
               />
             </Grid>
@@ -118,7 +148,7 @@ const OverallReport = () => {
                 value={endDate || todayDate}
                 defaultValue={todayDate}
                 InputLabelProps={{
-                  shrink: true,
+                  shrink: true
                 }}
               />
             </Grid>
@@ -128,9 +158,9 @@ const OverallReport = () => {
                 type="text"
                 name="name"
                 onChange={handleChange}
-                defaultValue={""}
+                defaultValue={''}
                 InputLabelProps={{
-                  shrink: true,
+                  shrink: true
                 }}
               />
             </Grid>
@@ -140,20 +170,16 @@ const OverallReport = () => {
                 type="text"
                 name="description"
                 onChange={handleChange}
-                defaultValue={""}
+                defaultValue={''}
                 InputLabelProps={{
-                  shrink: true,
+                  shrink: true
                 }}
               />
             </Grid>
 
             <Grid item xs={12} md={12} lg={12}>
               <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
+                style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
               >
                 <div style={{}}>
                   <LoadingButton
@@ -171,14 +197,14 @@ const OverallReport = () => {
                   <LoadingButton
                     onClick={(e) => {
                       e.preventDefault();
-                      exportExcel("data");
+                      exportExcel('data');
                     }}
                     type="button"
                     color="primary"
                     variant="contained"
                     sx={{ my: 2 }}
                   >
-                    Export data
+                    Excel Export
                   </LoadingButton>
                 </div>
               </div>
@@ -189,7 +215,7 @@ const OverallReport = () => {
           <DataTable
             ref={tableRef}
             value={subscribarList}
-            tableStyle={{ minWidth: "50rem" }}
+            tableStyle={{ minWidth: '50rem' }}
             rows={10}
             rowsPerPageOptions={[5, 10, 25, 50, 100]}
             paginator

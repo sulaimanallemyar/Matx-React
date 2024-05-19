@@ -93,10 +93,10 @@ const MatxVerticalNav = () => {
           path: '/roles/list',
           isHidden: !checkAuthorities(user.authorities, ['User:Read'])
         },
-        { name: 'Reports', iconText: 'FP', path: '/report' }
+        { name: 'Report', iconText: 'FP', path: '/report' }
       ],
       isHidden: false
-    },
+    }
   ];
   const renderLevels = (data) => {
     return data.map((item, index) => {

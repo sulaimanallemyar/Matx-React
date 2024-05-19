@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import useUser from 'app/hooks/useUser';
-import UserUpdate from './user-update';
 import { SUCCESS_DELETE_MESSAGE } from 'app/utils/constant';
 import { toast } from 'react-toastify';
 import axios from 'app/config/axios-interceptor';
