@@ -54,8 +54,6 @@ export const UserProvider = ({ children }) => {
   };
 
   const getEntities = async () => {
-    console.log('getting ennnn ----- userContext');
-
     try {
       const res = await axios.get('/users?sort=id,desc');
       dispatch({ type: 'LOAD_ENTITIES', payload: res.data });
@@ -67,7 +65,7 @@ export const UserProvider = ({ children }) => {
 
   const createEntity = async (notification) => {
     try {
-      const res = await axios.post('/users', { ...notification, roles: [] });
+      const res = await axios.post('/users', { ...notification });
       dispatch({ type: 'CREATE_ENTITY', payload: { ...res.data } });
     } catch (e) {
       console.error(e);

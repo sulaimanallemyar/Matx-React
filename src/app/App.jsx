@@ -11,7 +11,6 @@ import 'primereact/resources/primereact.min.css';
 // import "primeicons/primeicons.css"; // icons
 // import "primeflex/primeflex.css"; // flex
 import { lazy } from 'react';
-import { Navigate } from 'react-router-dom';
 import Loadable from './components/Loadable';
 import MatxLayout from './components/MatxLayout/MatxLayout';
 import UsersList from './views/users/ListUsers';

@@ -47,7 +47,7 @@ const ListRoles = () => {
   const [id, setId] = useState(0);
   const [passRole, setPassRole] = useState(null);
 
-  const [setCurrentEntity] = useState(null);
+  const [currentEntity, setCurrentEntity] = useState(null);
   const { getEntities, updateSuccess } = useUser();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [updateDialog, setUpdateDialog] = useState(false);
