@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import useUser from 'app/hooks/useUser';
-import UserUpdate from './user-update';
 import { SUCCESS_DELETE_MESSAGE } from 'app/utils/constant';
 import { toast } from 'react-toastify';
 import axios from 'app/config/axios-interceptor';
@@ -47,7 +46,7 @@ const ListRoles = () => {
   const [id, setId] = useState(0);
   const [passRole, setPassRole] = useState(null);
 
-  const [setCurrentEntity] = useState(null);
+  const [currentEntity, setCurrentEntity] = useState(null);
   const { getEntities, updateSuccess } = useUser();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [updateDialog, setUpdateDialog] = useState(false);

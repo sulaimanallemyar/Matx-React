@@ -25,7 +25,6 @@ import { APP_DATETIME_FORMAT } from 'app/utils/constant';
 import axios from 'app/config/axios-interceptor';
 import { fakeTableData } from './fakeTableDate';
 
-
 const StyledTable = styled(Table)(({ theme }) => ({
   whiteSpace: 'pre',
   '& thead': {
@@ -50,15 +49,6 @@ const TextField = styled(TextValidator)(() => ({
   marginBottom: '16px'
 }));
 
-const AutoComplete = styled(Autocomplete)(() => ({
-  width: 300,
-  marginBottom: '16px'
-}));
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(1)
-}));
-
 const OverallReport = () => {
   const [subscribarList, setsubscribarList] = useState([]);
   const [state, setState] = useState({
@@ -75,7 +65,7 @@ const OverallReport = () => {
   const [employee, setEmployee] = useState(null);
   const todayDate = useState(moment(today).format('YYYY-MM-DD'));
   const datatable = useRef(null);
-  const tableRef = useRef(null)
+  const tableRef = useRef(null);
 
   useEffect(() => {}, []);
 
@@ -90,8 +80,8 @@ const OverallReport = () => {
       name: event.target.name.value ? event.target.name.value : null,
       description: event.target.description.value ? event.target.description.value : null
     });
-    setsubscribarList(res.data);
 
+    setsubscribarList(res.data);
     setLoading(false);
   };
 
@@ -101,44 +91,31 @@ const OverallReport = () => {
 
   const searchrole = () => {};
 
-  const datatableHeader = (
-    <Grid direction="row" container item={true} spacing={2}>
-      <Grid item xs={12} md={6} lg={8}>
-        <Button
-          label="Export to Excel"
-          onClick={exportCSV}
-          size="small"
-          icon="pi pi-file-excel"
-          className="p-button-raised p-button-secondary "
-        />
-      </Grid>
-    </Grid>
-  );
-
-    const exportExcel = (filename) => {
-        import('xlsx').then((xlsx) => {
-            const worksheet = xlsx.utils.json_to_sheet(fakeTableData);
-            const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
-            const excelBuffer = xlsx.write(workbook, {
-                bookType: 'xlsx',
-                type: 'array'
-            });
-            saveAsExcelFile(excelBuffer, filename);
+  const exportExcel = (filename) => {
+    import('xlsx').then((xlsx) => {
+      const worksheet = xlsx.utils.json_to_sheet(fakeTableData);
+      const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
+      const excelBuffer = xlsx.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array'
+      });
+      saveAsExcelFile(excelBuffer, filename);
+    });
+  };
+  const saveAsExcelFile = (buffer, fileName) => {
+    import('file-saver').then((module) => {
+      if (module && module.default) {
+        let EXCEL_TYPE =
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+        let EXCEL_EXTENSION = '.xlsx';
+        const data = new Blob([buffer], {
+          type: EXCEL_TYPE
         });
-    };
-    const saveAsExcelFile = (buffer, fileName) => {
-        import('file-saver').then((module) => {
-            if (module && module.default) {
-                let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-                let EXCEL_EXTENSION = '.xlsx';
-                const data = new Blob([buffer], {
-                    type: EXCEL_TYPE
-                });
 
-                module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
-            }
-        });
-    };
+        module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+      }
+    });
+  };
 
   const { startDate, endDate } = state;
 
@@ -200,10 +177,10 @@ const OverallReport = () => {
               />
             </Grid>
 
-
             <Grid item xs={12} md={12} lg={12}>
-              <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-
+              <div
+                style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
+              >
                 <div style={{}}>
                   <LoadingButton
                     onclick={searchrole}
@@ -215,32 +192,27 @@ const OverallReport = () => {
                   >
                     Search
                   </LoadingButton>
-
                 </div>
                 <div style={{}}>
-
                   <LoadingButton
                     onClick={(e) => {
                       e.preventDefault();
-                      exportExcel("data")
-
+                      exportExcel('data');
                     }}
                     type="button"
                     color="primary"
                     variant="contained"
                     sx={{ my: 2 }}
                   >
-                    Export data
+                    Excel Export
                   </LoadingButton>
                 </div>
-
               </div>
             </Grid>
           </Grid>
         </ValidatorForm>
         <Box width="100%" overflow="auto">
-
-        <DataTable
+          <DataTable
             ref={tableRef}
             value={subscribarList}
             tableStyle={{ minWidth: '50rem' }}
@@ -256,8 +228,6 @@ const OverallReport = () => {
             <Column field="description" header="Description"></Column>
             <Column field="active" header="Active"></Column>
           </DataTable>
-
-
         </Box>
       </SimpleCard>
     </Container>

@@ -51,7 +51,7 @@ const validationSchema = Yup.object().shape({
 
 const JwtLogin = () => {
   const navigate = useNavigate();
-	 const toastRef = useRef(null);
+  const toastRef = useRef(null);
   const [loading, setLoading] = useState(false);
 
   const { login, isAuthenticated, message } = useAuth();
@@ -62,34 +62,34 @@ const JwtLogin = () => {
     try {
       console.log('send values of login: ', values.username, values.password);
       const response = await login(values.username, values.password);
-			if (response.status === 200){
-				navigate('/dashboard');
-			}
+      if (response.status === 200) {
+        navigate('/dashboard');
+      }
     } catch (e) {
       // setLoading(false);
     }
   };
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      navigate('/dashboard');
     }
   }, [isAuthenticated]);
 
   useEffect(() => {
     if (message?.length) {
       // alert('Invaild login');
-			toastRef.current.show({ 
-				severity: 'error', 
-				summary: 'Error', 
-				detail: 'Invalid credentials, please try again.',
-			});
+      toastRef.current.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Invalid credentials, please try again.'
+      });
       setLoading(false);
     }
   }, [message]);
 
   return (
     <JWTRoot>
-    <div className="bg-blue-200"></div>
+      <div className="bg-blue-200"></div>
       <Card className="card">
         <Grid container>
           <Grid item sm={6} xs={12}>
@@ -153,7 +153,7 @@ const JwtLogin = () => {
           </Grid>
         </Grid>
       </Card>
-		 <Toast ref={toastRef} />
+      <Toast ref={toastRef} />
     </JWTRoot>
   );
 };
