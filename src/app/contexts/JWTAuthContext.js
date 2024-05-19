@@ -1,7 +1,5 @@
 import { createContext, useEffect, useReducer } from 'react';
-// import axios from 'axios';
 import { MatxLoading } from 'app/components';
-// import axiosInstance, { SERVER_API_URL } from '../../axios-interceptor';
 import axios from 'app/config/axios-interceptor';
 
 const initialState = {

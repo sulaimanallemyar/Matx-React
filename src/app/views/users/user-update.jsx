@@ -1,49 +1,56 @@
-import { Button, Box, styled } from '@mui/material';
-import { React, useEffect, useState } from 'react';
-import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
-import useUser from 'app/hooks/useUser';
-import { toast } from 'react-toastify';
-import { SUCCESS_CREATE_MESSAGE, SUCCESS_UPDATE_MESSAGE } from 'app/utils/constant';
-import { LoadingButton } from '@mui/lab';
-import DualListBox from 'react-dual-listbox';
-import 'react-dual-listbox/lib/react-dual-listbox.css';
-import axios from 'app/config/axios-interceptor';
+import { Button, Box, styled } from "@mui/material";
+import { React, useEffect, useState } from "react";
+import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
+import useUser from "app/hooks/useUser";
+import { toast } from "react-toastify";
+import {
+  SUCCESS_CREATE_MESSAGE,
+  SUCCESS_UPDATE_MESSAGE,
+} from "app/utils/constant";
+import { LoadingButton } from "@mui/lab";
+import DualListBox from "react-dual-listbox";
+import "react-dual-listbox/lib/react-dual-listbox.css";
+import axios from "app/config/axios-interceptor";
+import { PickList } from "primereact/picklist";
 
 const containerStyle = {
-  display: 'flex',
-  justifyContent: 'space-between'
+  width: "100%",
+  display: "flex",
+  justifyContent: "space-between",
 };
 
 const columnStyle = {
   flex: 1,
-  width: '26.5vw',
-  marginRight: '1vw'
+  width: "26.5vw",
+  marginRight: "1vw",
 };
 
 const TextField = styled(TextValidator)(() => ({
-  // flex: 1,
-  // flexGrow: 1,
-  width: '100%',
-  marginBottom: '16px'
+  width: "100%",
+  marginBottom: "16px",
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(1)
+  margin: theme.spacing(1),
 }));
 
 const ContentBox = styled(Box)(() => ({
-  height: '100%',
-  padding: '32px',
-  position: 'relative',
-  background: 'rgba(0, 0, 0, 0.01)'
+  height: "100%",
+  padding: "32px",
+  position: "relative",
+  background: "rgba(0, 0, 0, 0.01)",
 }));
 
 export const UserUpdate = (props) => {
   const [state, setState] = useState({ date: new Date() });
   const { createEntity, updateEntity, updateSuccess } = useUser();
   const [loading, setLoading] = useState(false);
+  const [loadCorrectRoles, setLoadCorectRoles] = useState(false);
+
   const [roles] = useState({
-    label: props.currentEntity?.roles ? props.currentEntity?.roles : 'ROLE_ADMIN'
+    label: props.currentEntity?.roles
+      ? props.currentEntity?.roles
+      : "ROLE_ADMIN",
   });
   const [listofroles, setlistofroles] = useState([]);
   const [listofSelectedroles, setlistofSelectedroles] = useState([]);
@@ -53,7 +60,7 @@ export const UserUpdate = (props) => {
       setState(props.currentEntity);
     }
     const init = async () => {
-      const { data: rls } = await axios.get('/roles');
+      const { data: rls } = await axios.get("/roles");
       setlistofroles(rls);
     };
     init();
@@ -63,24 +70,23 @@ export const UserUpdate = (props) => {
     setLoading(true);
     state.roles = roles === undefined ? null : roles.label;
 
+		console.log("selected onesJJ", listofSelectedroles)
+
     if (props.currentEntity) {
       try {
-        updateEntity(state);
-        await axios.put('/users', {
-          ...state,
-          roles: listofroles.filter((r) => listofSelectedroles.includes(r.id))
-        });
+        updateEntity({
+					...state,
+					roles: listofSelectedroles
+				});
       } catch (e) {
         setLoading(false);
       }
     } else {
       try {
-        createEntity(state);
-        console.log('cr: ', state);
-        await axios.put('/users', {
-          ...state,
-          roles: listofroles.filter((r) => listofSelectedroles.includes(r.id))
-        });
+        createEntity({
+					...state,
+					roles: listofSelectedroles,
+				});
       } catch (e) {
         setLoading(false);
       }
@@ -88,12 +94,12 @@ export const UserUpdate = (props) => {
   };
 
   useEffect(() => {
-    ValidatorForm.addValidationRule('isPasswordMatch', (value) => {
+    ValidatorForm.addValidationRule("isPasswordMatch", (value) => {
       if (value !== state.password) return false;
 
       return true;
     });
-    return () => ValidatorForm.removeValidationRule('isPasswordMatch');
+    return () => ValidatorForm.removeValidationRule("isPasswordMatch");
   }, [state.password]);
 
   const handleChange = (event) => {
@@ -113,14 +119,23 @@ export const UserUpdate = (props) => {
     }
   }, [updateSuccess]);
 
-  const { username, firstName, lastName, password, confirmPassword, roles: currentRoles } = state;
+  const {
+    username,
+    firstName,
+    lastName,
+    password,
+    confirmPassword,
+    roles: currentRoles,
+  } = state;
+
   useEffect(() => {
+    setLoadCorectRoles(true);
     if (Array.isArray(currentRoles) && currentRoles.length > 0) {
-      console.log('currentRoles: ', currentRoles);
-      setlistofSelectedroles(currentRoles.map((r) => r.id));
+      setlistofSelectedroles(currentRoles);
     } else {
       setlistofSelectedroles([]);
     }
+    setLoadCorectRoles(false);
   }, [currentRoles]);
 
   return (
@@ -129,13 +144,13 @@ export const UserUpdate = (props) => {
         <ValidatorForm onSubmit={handleSubmit} onError={() => null}>
           <div
             style={{
-              display: 'flex',
+              display: "flex",
               flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'space-between'
+              flexDirection: "row",
+              justifyContent: "space-between",
             }}
           >
-            {' '}
+            {" "}
             <div style={columnStyle}>
               <TextField
                 fullWidth
@@ -144,26 +159,26 @@ export const UserUpdate = (props) => {
                 name="username"
                 label="Username"
                 variant="outlined"
-                value={username || ''}
+                value={username || ""}
                 onChange={handleChange}
-                errorMessages={['this field is required']}
-                validators={['required']}
-                sx={{ mb: 3, width: '100%' }}
+                errorMessages={["this field is required"]}
+                validators={["required"]}
+                sx={{ mb: 3, width: "100%" }}
               />
             </div>
           </div>
 
           <div
             style={{
-              display: 'flex',
+              display: "flex",
               flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'space-between'
+              flexDirection: "row",
+              justifyContent: "space-between",
             }}
           >
             <div style={containerStyle}>
               <div style={columnStyle}>
-                {' '}
+                {" "}
                 <TextField
                   fullWidth
                   size="small"
@@ -171,10 +186,10 @@ export const UserUpdate = (props) => {
                   name="firstName"
                   label="First Name"
                   variant="outlined"
-                  value={firstName || ''}
+                  value={firstName || ""}
                   onChange={handleChange}
-                  errorMessages={['this field is required']}
-                  validators={['required']}
+                  errorMessages={["this field is required"]}
+                  validators={["required"]}
                   sx={{ mb: 3 }}
                 />
               </div>
@@ -186,7 +201,7 @@ export const UserUpdate = (props) => {
                   name="lastName"
                   label="Last Name"
                   variant="outlined"
-                  value={lastName || ''}
+                  value={lastName || ""}
                   onChange={handleChange}
                   sx={{ mb: 3 }}
                 />
@@ -196,10 +211,10 @@ export const UserUpdate = (props) => {
           </div>
           <div
             style={{
-              display: 'flex',
+              display: "flex",
               flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'space-between'
+              flexDirection: "row",
+              justifyContent: "space-between",
             }}
           >
             {!state?.id && (
@@ -212,9 +227,9 @@ export const UserUpdate = (props) => {
                     type="password"
                     label="Password"
                     onChange={handleChange}
-                    value={password || ''}
-                    errorMessages={['this field is required']}
-                    validators={['required']}
+                    value={password || ""}
+                    errorMessages={["this field is required"]}
+                    validators={["required"]}
                   />
                 </div>
                 <div style={columnStyle}>
@@ -225,9 +240,12 @@ export const UserUpdate = (props) => {
                     type="password"
                     label="Confirm Password"
                     onChange={handleChange}
-                    value={confirmPassword || ''}
-                    validators={['required', 'isPasswordMatch']}
-                    errorMessages={['this field is required', "password didn't match"]}
+                    value={confirmPassword || ""}
+                    validators={["required", "isPasswordMatch"]}
+                    errorMessages={[
+                      "this field is required",
+                      "password didn't match",
+                    ]}
                   />
                 </div>
               </div>
@@ -235,21 +253,33 @@ export const UserUpdate = (props) => {
             <br />
           </div>
 
-          <DualListBox
-            options={listofroles.map((r) => ({ value: r.id, label: r.description }))}
-            selected={listofSelectedroles}
-            onChange={(newValue) => setlistofSelectedroles(newValue)}
-            icons={{
-              moveLeft: <span>{'<'}</span>
-              // moveAllLeft: <span></span>,
-              // moveRight: <span></span>,
-              // moveAllRight: <span></span>,
+          {!loadCorrectRoles && (
+            <PickList
+              dataKey="id"
+              source={listofroles.filter((r) => !listofSelectedroles.map(x=>x.id).includes(r.id))}
+              target={listofSelectedroles}
+              onChange={(event) => {
+                setlistofroles(event.source);
+                setlistofSelectedroles(event.target);
+              }}
+              itemTemplate={(item) => item.name}
+              sourceHeader="Available"
+              targetHeader="Selected"
+            />
+          )}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
             }}
-          />
-
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+          >
             <div className="left-btn" style={{ marginTop: 2 }}>
-              <StyledButton variant="contained" color="inherit" onClick={() => props.closeDialog()}>
+              <StyledButton
+                variant="contained"
+                color="inherit"
+                onClick={() => props.closeDialog()}
+              >
                 Close
               </StyledButton>
             </div>

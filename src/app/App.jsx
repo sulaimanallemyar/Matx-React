@@ -11,12 +11,12 @@ import 'primereact/resources/primereact.min.css';
 // import "primeicons/primeicons.css"; // icons
 // import "primeflex/primeflex.css"; // flex
 import { lazy } from 'react';
-import { Navigate } from 'react-router-dom';
 import Loadable from './components/Loadable';
 import MatxLayout from './components/MatxLayout/MatxLayout';
 import UsersList from './views/users/ListUsers';
 import ListRoles from './views/users/listRoles';
 import OverallReport from './views/report/report';
+import Index from './views/home/Index';
 
 
 // session pages
@@ -39,6 +39,7 @@ const App = () => {
           <UserProvider>
             <CssBaseline />
             <Routes>
+              <Route path="/" element={<Index />} />
               <Route path="/" element={<PrivateRoute />}>
                 <Route path="*" element={<AuthLayout />} />
               </Route>
@@ -46,7 +47,6 @@ const App = () => {
               <Route path="/session/signin" element={<JwtLogin />} />
               <Route path="/session/signup" element={<JwtRegister />} />
               <Route path="/session/forgot-password" element={<ForgotPassword />} />
-              <Route path="/" element={<Navigate to="/" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             {/* {content} */}
@@ -85,7 +85,7 @@ const AuthLayout = () => {
             element={<PrivateRoute><ListRoles /></PrivateRoute>}
           />
 
-          <Route path="/" element={<Navigate to="/dashboard/default" />} />
+          <Route path="/" element={<Index />} />
         </Routes>
       </MatxLayout>
     </>
