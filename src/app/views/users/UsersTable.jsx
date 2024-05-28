@@ -9,7 +9,7 @@ import {
   TableHead,
   TableRow
 } from '@mui/material';
-import axios from 'app/config/axios-interceptor';
+import axios from 'axios';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useNavigate, useRoutes } from 'react-router-dom';

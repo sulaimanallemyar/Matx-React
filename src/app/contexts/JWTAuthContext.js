@@ -1,10 +1,10 @@
 import { createContext, useEffect, useReducer } from 'react';
 import { MatxLoading } from 'app/components';
-import axios from 'app/config/axios-interceptor';
+import axios from 'axios';
 
 const initialState = {
   user: null,
-  isInitialised: false,
+  isInitialised: true,
   isAuthenticated: false
 };
 
@@ -33,6 +33,9 @@ const reducer = (state, action) => {
       const data = action.payload;
       return { ...state, ...data };
     }
+    case 'RESET': {
+      return initialState;
+    }
 
     default:
       return state;
@@ -45,7 +48,9 @@ const AuthContext = createContext({
   message: '',
   login: () => {},
   logout: () => {},
-  register: () => {}
+  register: () => {},
+  resetState: () => {},
+  currentLoggedUser: () => {}
 });
 
 export const AuthProvider = ({ children }) => {
@@ -54,11 +59,12 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const { data: token, status } = await axios.post('/signin', { username: email, password });
+
       localStorage.setItem('token', token);
 
       const { data: user } = await axios.get('/users/current-logged-user');
       dispatch({ type: 'LOGIN', payload: { user } });
-			return { status: 200  }
+      return { status: 200 };
     } catch (error) {
       dispatch({
         type: 'UPDATE',
@@ -75,28 +81,34 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
     dispatch({ type: 'LOGOUT' });
   };
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await axios.get('/users/current-logged-user');
-        dispatch({
-          type: 'INIT',
-          payload: { isAuthenticated: true, user: { ...data, name: data.firstName } }
-        });
-      } catch (err) {
-        dispatch({ type: 'INIT', payload: { isAuthenticated: false, user: null } });
-      }
-    })();
-  }, []);
+  const resetState = () => {
+    dispatch({ type: 'RESET' });
+  };
+  const currentLoggedUser = async () => {
+    try {
+      const { data } = await axios.get('/users/current-logged-user');
+
+      dispatch({
+        type: 'INIT',
+        payload: { isAuthenticated: true, user: { ...data, name: data.firstName } }
+      });
+    } catch (err) {
+      dispatch({ type: 'INIT', payload: { isAuthenticated: false, user: null } });
+    }
+  };
+  useEffect(() => {}, []);
 
   // SHOW LOADER
   if (!state.isInitialised) return <MatxLoading />;
 
   return (
-    <AuthContext.Provider value={{ ...state, method: 'JWT', login, logout, register }}>
+    <AuthContext.Provider
+      value={{ ...state, method: 'JWT', login, logout, register, currentLoggedUser, resetState }}
+    >
       {children}
     </AuthContext.Provider>
   );

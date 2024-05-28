@@ -1,5 +1,5 @@
 import { createContext, useReducer } from 'react';
-import axios from 'app/config/axios-interceptor';
+import axios from 'axios';
 
 const initialState = { entities: [], updateSuccess: false, entity: {} };
 
@@ -58,7 +58,6 @@ export const UserProvider = ({ children }) => {
       const res = await axios.get('/users?sort=id,desc');
       dispatch({ type: 'LOAD_ENTITIES', payload: res.data });
     } catch (e) {
-      console.log('getting enttt error');
       console.error(e);
     }
   };

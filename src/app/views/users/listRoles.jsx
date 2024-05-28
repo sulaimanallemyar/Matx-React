@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import useUser from 'app/hooks/useUser';
 import { SUCCESS_DELETE_MESSAGE } from 'app/utils/constant';
 import { toast } from 'react-toastify';
-import axios from 'app/config/axios-interceptor';
+import axios from 'axios';
 import UpdateRole from './update-roles';
 
 const StyledTable = styled(Table)(({ theme }) => ({

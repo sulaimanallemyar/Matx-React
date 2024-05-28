@@ -128,9 +128,9 @@ const Layout1Topbar = () => {
         <Box display="flex" alignItems="center">
           <MatxSearchBox />
 
-          <NotificationProvider>
+          {/* <NotificationProvider>
             <NotificationBar />
-          </NotificationProvider>
+          </NotificationProvider> */}
 
           <ShoppingCart />
 

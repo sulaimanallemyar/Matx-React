@@ -22,7 +22,7 @@ import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 import moment from 'moment';
 import { Button } from 'primereact/button';
 import { APP_DATETIME_FORMAT } from 'app/utils/constant';
-import axios from 'app/config/axios-interceptor';
+import axios from 'axios';
 import { fakeTableData } from './fakeTableDate';
 
 const StyledTable = styled(Table)(({ theme }) => ({
@@ -85,15 +85,11 @@ const OverallReport = () => {
     setLoading(false);
   };
 
-  const exportCSV = () => {
-    datatable.current.exportCSV();
-  };
-
   const searchrole = () => {};
 
   const exportExcel = (filename) => {
     import('xlsx').then((xlsx) => {
-      const worksheet = xlsx.utils.json_to_sheet(fakeTableData);
+      const worksheet = xlsx.utils.json_to_sheet(subscribarList);
       const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
       const excelBuffer = xlsx.write(workbook, {
         bookType: 'xlsx',
